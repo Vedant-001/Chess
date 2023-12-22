@@ -37,11 +37,35 @@ def main():
     load_images()
 
     running = True
+    selected_square = () #to keep track of the last click by the user
+    player_clicks = [] #to keep track of the player clicks
 
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+            elif e.type == p.MOUSEBUTTONDOWN:
+                location = p.mouse.get_pos() # x,y location of mouse
+                row = location[1]//square_size
+                col = location[0]//square_size
+
+                # if player clicks the same square twice -> undo
+                if selected_square == (row,col):
+                    selected_square = ()
+                    player_clicks = []
+                else:
+                    selected_square = (row,col)
+                    player_clicks.append(selected_square) # append for both 1st and 2nd clicks
+
+                # if the player has clicked for the second time on a valid square,
+                # which is not necessarily a legal move -> still move the piece
+                if len(player_clicks) == 2:
+                    move = chessEngine.Move(player_clicks[0],player_clicks[1],gamestate.board)
+                    print(move.getChessNotation())
+                    gamestate.makeMove(move)
+                    selected_square = ()
+                    player_clicks = [] # reset the clicks
+
         drawGameState(screen,gamestate)
         clock.tick(max_fps)
         p.display.flip()
