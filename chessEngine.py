@@ -13,14 +13,14 @@ class GameState():
         # Second character represents the piece - R for rook, N for Knight, B for Bishop and K for King
         # Blank/empty spaces are denoted by '--'
         self.board = [
-            ["bR","bN","bB","bQ","bK","bB","bK","bR"],
+            ["bR","bN","bB","bQ","bK","bB","bN","bR"],
             ["bP","bP","bP","bP","bP","bP","bP","bP"],
             ["--","--","--","--","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
             ["wP","wP","wP","wP","wP","wP","wP","wP"],
-            ["wR","wN","wB","wQ","wK","wB","wK","wR"]
+            ["wR","wN","wB","wQ","wK","wB","wN","wR"]
         ]
         self.whiteToMove = True
         self.moveLog = []
