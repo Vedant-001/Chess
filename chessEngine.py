@@ -43,6 +43,73 @@ class GameState():
             self.board[move.start_row][move.start_col] = move.piece_moved
             self.board[move.end_row][move.end_col] = move.piece_captured # places empty if there was no piece captured
             self.whiteToMove = not self.whiteToMove # switch back to the player's move
+    
+    '''
+    All valid moves considering check
+    '''
+    def getValidMove(self):
+        return self.getPossibleMoves()
+        pass
+
+    '''
+    All valid moves without considering checks
+    '''
+    def getPossibleMoves(self):
+        moves = []
+        for r in range(len(self.board)): # use len(self.board) instead of simply 8
+            for c in range(len(self.board[r])):
+                turn = self.board[r][c][0]
+                if (turn == 'w' and self.whiteToMove) and (turn == 'b' and not self.whiteToMove):
+                    piece = self.board[r][c][1]
+
+                    if piece == 'p':
+                        self.getPawnMoves(r,c,moves)
+                    elif piece == 'R':
+                        self.getRookMoves(r,c,moves)
+                    elif piece == 'B':
+                        self.getBishopMoves(r,c,moves)
+                    elif piece == 'N':
+                        self.getNightMoves(r,c,moves)
+                    elif piece == 'Q':
+                        self.getQueenMoves(r,c,moves)
+                    elif piece == 'K':
+                        self.getKingMoves(r,c,moves)
+    '''
+    Get all pawn moves for the pawn located at [r][c] and add them to the list
+    '''
+    def getPawnMoves(r,c,moves):
+        pass
+
+    '''
+    Get all rook moves for the rook located at [r][c] and add them to the list
+    '''
+    def getRookMoves(r,c,moves):
+        pass 
+
+    '''
+    Get all bishop moves for the bishop located at [r][c] and add them to the list
+    '''
+    def getBishopMoves(r,c,moves):
+        pass
+    
+    '''
+    Get all night moves for the night located at [r][c] and add them to the list
+    '''
+    def getNightMoves(r,c,moves):
+        pass
+
+    '''
+    Get all queen moves for the queen located at [r][c] and add them to the list
+    '''
+    def getQueenMoves(r,c,moves):
+        pass
+
+    '''
+    Get all king moves for the king located at [r][c] and add them to the list
+    '''
+    def getKingMoves(r,c,moves):
+        pass
+
 
 class Move():
     # map keys (ranks/files) to values (rows/cols)
