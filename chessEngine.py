@@ -37,7 +37,7 @@ class GameState():
     '''
     Undo the last move
     '''
-    def undoMove(self,move):
+    def undoMove(self):
         if self.moveLog:
             move = self.moveLog.pop()
             self.board[move.start_row][move.start_col] = move.piece_moved
