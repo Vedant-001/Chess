@@ -25,11 +25,24 @@ class GameState():
         self.whiteToMove = True
         self.moveLog = []
     
+    '''
+    Makes a move (cannot castle/en-passant/promote a pawn)
+    '''
     def makeMove(self,move):
         self.board[move.start_row][move.start_col] = "--"
         self.board[move.end_row][move.end_col] = move.piece_moved
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove # swap current player
+
+    '''
+    Undo the last move
+    '''
+    def undoMove(self,move):
+        if self.moveLog:
+            move = self.moveLog.pop()
+            self.board[move.start_row][move.start_col] = move.piece_moved
+            self.board[move.end_row][move.end_col] = move.piece_captured # places empty if there was no piece captured
+            self.whiteToMove = not self.whiteToMove # switch back to the player's move
 
 class Move():
     # map keys (ranks/files) to values (rows/cols)
