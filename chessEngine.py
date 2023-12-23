@@ -55,7 +55,7 @@ class GameState():
     All valid moves without considering checks
     '''
     def getPossibleMoves(self):
-        moves = []
+        moves = [Move((6,4),(4,4),self.board)]
         for r in range(len(self.board)): # use len(self.board) instead of simply 8
             for c in range(len(self.board[r])):
                 turn = self.board[r][c][0]
@@ -74,6 +74,8 @@ class GameState():
                         self.getQueenMoves(r,c,moves)
                     elif piece == 'K':
                         self.getKingMoves(r,c,moves)
+        return moves 
+    
     '''
     Get all pawn moves for the pawn located at [r][c] and add them to the list
     '''
@@ -129,6 +131,15 @@ class Move():
         self.end_col = end_square[1]
         self.piece_moved = board[self.start_row][self.start_col]
         self.piece_captured = board[self.end_row][self.end_col]
+        self.moveId = self.start_row*1000 + self.start_col*100 + self.end_row*10 + self.end_col
+
+    """
+    Override the equals method
+    """
+    def __eq__(self,other):
+        if isinstance(other,Move): # isinstance is a function
+            return self.moveId == other.moveId
+            return False
 
     def getChessNotation(self):
         return self.getRankFile(self.start_row,self.start_col)+self.getRankFile(self.end_row,self.end_col)

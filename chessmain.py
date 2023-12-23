@@ -34,6 +34,8 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     gamestate = chessEngine.GameState()
+    valid_moves = gamestate.getValidMove()
+    move_made = False # flag variable for when a move is valid
     load_images()
 
     running = True
@@ -63,14 +65,21 @@ def main():
                 if len(player_clicks) == 2:
                     move = chessEngine.Move(player_clicks[0],player_clicks[1],gamestate.board)
                     print(move.getChessNotation())
-                    gamestate.makeMove(move)
+                    if move in valid_moves:
+                        gamestate.makeMove(move)
+                        move_made = True
                     selected_square = ()
                     player_clicks = [] # reset the clicks
             # key handler
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
                     gamestate.undoMove()
-                    
+                    move_made = True # considering undo as a valid move 
+    # generate valid moves only when a valid move is made
+        if move_made:
+            valid_moves = gamestate.getValidMove()
+            move_made = False
+
         drawGameState(screen,gamestate)
         clock.tick(max_fps)
         p.display.flip()
