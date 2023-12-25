@@ -61,8 +61,7 @@ class GameState():
                 turn = self.board[r][c][0]
                 if (turn == 'w' and self.whiteToMove) or (turn == 'b' and not self.whiteToMove):
                     piece = self.board[r][c][1]
-
-                    if piece == 'p':
+                    if piece == 'P':
                         self.getPawnMoves(r,c,moves)
                     elif piece == 'R':
                         self.getRookMoves(r,c,moves)
@@ -137,7 +136,6 @@ class Move():
         self.piece_moved = board[self.start_row][self.start_col]
         self.piece_captured = board[self.end_row][self.end_col]
         self.moveId = self.start_row*1000 + self.start_col*100 + self.end_row*10 + self.end_col
-        print(self.moveId)
 
     """
     Override the equals method
