@@ -209,6 +209,26 @@ class GameState():
     Get all king moves for the king located at [r][c] and add them to the list
     '''
     def getKingMoves(self,r,c,moves):
+        playerColor = "w" if self.whiteToMove else "b"
+        if r+1 < 8:
+            if self.board[r+1][c][0] != playerColor:
+                moves.append(Move((r,c),(r+1,c),self.board))
+            if c-1 >= 0 and self.board[r+1][c-1][0] != playerColor:
+                moves.append(Move((r,c),(r+1,c-1),self.board))
+            if c+1 <8 and self.board[r+1][c+1][0] != playerColor:
+                moves.append(Move((r,c),(r+1,c+1),self.board))
+        if r-1 >= 0:
+            if self.board[r-1][c][0] != playerColor:
+                moves.append(Move((r,c),(r-1,c),self.board))
+            if c-1 >= 0 and self.board[r-1][c-1][0] != playerColor:
+                moves.append(Move((r,c),(r-1,c-1),self.board))
+            if c+1 <8 and self.board[r-1][c+1][0] != playerColor:
+                moves.append(Move((r,c),(r-1,c+1),self.board))
+        if c+1 < 8 and self.board[r][c+1][0] != playerColor:
+            moves.append(Move((r,c),(r,c+1),self.board))
+        if c-1 < 8 and self.board[r][c-1][0] != playerColor:
+            moves.append(Move((r,c),(r,c-1),self.board))
+
         pass
 
 
