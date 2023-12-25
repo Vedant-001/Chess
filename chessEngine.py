@@ -15,10 +15,10 @@ class GameState():
         self.board = [
             ["bR","bN","bB","bQ","bK","bB","bN","bR"],
             ["bP","bP","bP","bP","bP","bP","bP","bP"],
-            ["--","--","--","wP","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
-            ["--","--","--","bP","--","--","--","--"],
+            ["--","--","wR","--","--","--","--","--"],
+            ["--","--","--","--","--","--","--","--"],
             ["wP","wP","wP","wP","wP","wP","wP","wP"],
             ["wR","wN","wB","wQ","wK","wB","wN","wR"]
         ] #Note: a two pawns have been added for testing
@@ -35,6 +35,10 @@ class GameState():
         self.board[move.end_row][move.end_col] = move.piece_moved
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove # swap current player
+        if self.whiteToMove:
+            print("white to move")
+        else:
+            print("black to move")
 
     '''
     Undo the last move
@@ -102,7 +106,51 @@ class GameState():
     Get all rook moves for the rook located at [r][c] and add them to the list
     '''
     def getRookMoves(self,r,c,moves):
-        pass 
+        # four variables for four directions
+        left,right,up,down = c-1,c+1,r-1,r+1
+
+        enemyColor = "b" if self.whiteToMove else "w"
+        playerColor = "w" if self.whiteToMove else "b"
+
+        while(up >= 0 and self.board[up][c][0] != playerColor):
+            # if the piece is of the same color -> don't include the square and stop
+            if(self.board[up][c][0] == playerColor):
+                break
+            moves.append(Move((r,c),(up,c),self.board))
+            # if the piece is of different color -> include the square and stop
+            if(self.board[up][c][0] == enemyColor):
+                break
+            up -= 1
+        
+        while(down <= 7): #and self.board[down][c][0] != playerColor
+            # if the piece is of the same color -> don't include the square and stop
+            if(self.board[down][c][0] == playerColor):
+                break
+            moves.append(Move((r,c),(down,c),self.board))
+            # if the piece is of different color -> include the square and stop
+            if(self.board[down][c][0] == enemyColor):
+                break
+            down += 1
+
+        while(left >= 0 and self.board[r][left][0] != playerColor):
+            # if the piece is of the same color -> don't include the square and stop
+            if(self.board[r][left][0] == playerColor):
+                break
+            moves.append(Move((r,c),(r,left),self.board))
+            # if the piece is of different color -> include the square and stop
+            if(self.board[r][left][0] == enemyColor):
+                break
+            left -= 1
+        
+        while(right <= 7 and self.board[r][right][0] != playerColor):
+            # if the piece is of the same color -> don't include the square and stop
+            if(self.board[r][right][0] == playerColor):
+                break
+            moves.append(Move((r,c),(r,right),self.board))
+            # if the piece is of different color -> include the square and stop
+            if(self.board[r][right][0] == enemyColor):
+                break
+            right += 1
 
     '''
     Get all bishop moves for the bishop located at [r][c] and add them to the list
