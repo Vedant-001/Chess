@@ -203,7 +203,8 @@ class GameState():
     Get all queen moves for the queen located at [r][c] and add them to the list
     '''
     def getQueenMoves(self,r,c,moves):
-        pass
+        self.getRookMoves(r,c,moves)
+        self.getBishopMoves(r,c,moves)
 
     '''
     Get all king moves for the king located at [r][c] and add them to the list
