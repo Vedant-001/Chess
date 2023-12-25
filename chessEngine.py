@@ -94,6 +94,19 @@ class GameState():
                 if self.board[r-1][c+1][0] == 'b':
                     moves.append(Move((r,c),(r-1,c+1),self.board))
 
+        # black Pawn moves
+        else:
+            if self.board[r+1][c] == '--': # move one place
+                moves.append(Move((r,c),(r+1,c),self.board))
+                if r == 1 and self.board[r+2][c] == '--': # move two places
+                    moves.append(Move((r,c),(r+2,c),self.board))
+            # captures
+            if c-1 >= 0: #edge case - cannot capture beyond the extreme
+                if self.board[r+1][c-1][0] == 'w': #capture to the left
+                    moves.append(Move((r,c),(r+1,c-1),self.board))
+            if c+1 <= 7: #capture to the right
+                if self.board[r+1][c+1][0] == 'w':
+                    moves.append(Move((r,c),(r+1,c+1),self.board))
     '''
     Get all rook moves for the rook located at [r][c] and add them to the list
     '''
