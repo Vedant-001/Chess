@@ -15,9 +15,9 @@ class GameState():
         self.board = [
             ["bR","bN","bB","bQ","bK","bB","bN","bR"],
             ["bP","bP","bP","bP","bP","bP","bP","bP"],
+            ["--","--","--","--","--","--","--","bB"],
             ["--","--","--","--","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
-            ["--","--","wR","--","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
             ["wP","wP","wP","wP","wP","wP","wP","wP"],
             ["wR","wN","wB","wQ","wK","wB","wN","wR"]
@@ -112,7 +112,7 @@ class GameState():
         enemyColor = "b" if self.whiteToMove else "w"
         playerColor = "w" if self.whiteToMove else "b"
 
-        while(up >= 0 and self.board[up][c][0] != playerColor):
+        while(up >= 0):
             # if the piece is of the same color -> don't include the square and stop
             if(self.board[up][c][0] == playerColor):
                 break
@@ -122,7 +122,7 @@ class GameState():
                 break
             up -= 1
         
-        while(down <= 7): #and self.board[down][c][0] != playerColor
+        while(down <= 7):
             # if the piece is of the same color -> don't include the square and stop
             if(self.board[down][c][0] == playerColor):
                 break
@@ -132,7 +132,7 @@ class GameState():
                 break
             down += 1
 
-        while(left >= 0 and self.board[r][left][0] != playerColor):
+        while(left >= 0):
             # if the piece is of the same color -> don't include the square and stop
             if(self.board[r][left][0] == playerColor):
                 break
@@ -142,7 +142,7 @@ class GameState():
                 break
             left -= 1
         
-        while(right <= 7 and self.board[r][right][0] != playerColor):
+        while(right <= 7):
             # if the piece is of the same color -> don't include the square and stop
             if(self.board[r][right][0] == playerColor):
                 break
@@ -156,7 +156,25 @@ class GameState():
     Get all bishop moves for the bishop located at [r][c] and add them to the list
     '''
     def getBishopMoves(self,r,c,moves):
-        pass
+        directions = ((-1,-1),(-1,1),(1,-1),(1,1))
+        enemyColor = "b" if self.whiteToMove else "w"
+        playerColor = "w" if enemyColor == "b" else "b"
+
+        for d in directions:
+            for i in range(1,8):
+                endRow = r+d[0]*i
+                endCol = c+d[1]*i
+                if 0 <= endRow < 8 and 0 <= endCol < 8:
+                    endPiece = self.board[endRow][endCol]
+                    if endPiece[0] == playerColor:
+                        break
+                    moves.append(Move((r,c,),(endRow,endCol),self.board))
+                    if endPiece[0] == enemyColor:
+                        break
+                else:
+                    break
+
+
     
     '''
     Get all night moves for the night located at [r][c] and add them to the list
