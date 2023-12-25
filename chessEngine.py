@@ -180,7 +180,24 @@ class GameState():
     Get all night moves for the night located at [r][c] and add them to the list
     '''
     def getNightMoves(self,r,c,moves):
-        pass
+        playerColor = "w" if self.whiteToMove else "b"
+
+        if r+2 < 8 and c+1 <8 and self.board[r+2][c+1][0] != playerColor:
+            moves.append(Move((r,c),(r+2,c+1),self.board))
+        if r+2 < 8 and c-1 >= 0 and self.board[r+2][c-1][0] != playerColor:
+            moves.append(Move((r,c),(r+2,c-1),self.board))
+        if r-2 >= 0 and c+1 < 8 and self.board[r-2][c+1][0] != playerColor:
+            moves.append(Move((r,c),(r-2,c+1),self.board))
+        if r-2 >= 0 and c-1 >= 0 and self.board[r-2][c-1][0] != playerColor:
+            moves.append(Move((r,c),(r-2,c-1),self.board))
+        if r+1 < 8 and c+2 < 8 and self.board[r+1][c+2][0] != playerColor:
+            moves.append(Move((r,c),(r+1,c+2),self.board))
+        if r-1 >= 0 and c+2 < 8 and self.board[r-1][c+2][0] != playerColor:
+            moves.append(Move((r,c),(r-1,c+2),self.board))
+        if r+1 < 8 and c-2 >= 0 and self.board[r+1][c-2][0] != playerColor:
+            moves.append(Move((r,c),(r+1,c-2),self.board))
+        if r-1 >= 0 and c-2 >= 0 and self.board[r-1][c-2][0] != playerColor:
+            moves.append(Move((r,c),(r-1,c-2),self.board))
 
     '''
     Get all queen moves for the queen located at [r][c] and add them to the list
