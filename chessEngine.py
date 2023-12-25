@@ -22,6 +22,8 @@ class GameState():
             ["wP","wP","wP","wP","wP","wP","wP","wP"],
             ["wR","wN","wB","wQ","wK","wB","wN","wR"]
         ] #Note: a two pawns have been added for testing
+        self.moveFunctions = {'P':self.getPawnMoves,'B':self.getBishopMoves,'K':self.getKingMoves,
+                              'N':self.getNightMoves,'Q':self.getQueenMoves,'R':self.getRookMoves}
         self.whiteToMove = True
         self.moveLog = []
     
@@ -61,18 +63,7 @@ class GameState():
                 turn = self.board[r][c][0]
                 if (turn == 'w' and self.whiteToMove) or (turn == 'b' and not self.whiteToMove):
                     piece = self.board[r][c][1]
-                    if piece == 'P':
-                        self.getPawnMoves(r,c,moves)
-                    elif piece == 'R':
-                        self.getRookMoves(r,c,moves)
-                    elif piece == 'B':
-                        self.getBishopMoves(r,c,moves)
-                    elif piece == 'N':
-                        self.getNightMoves(r,c,moves)
-                    elif piece == 'Q':
-                        self.getQueenMoves(r,c,moves)
-                    elif piece == 'K':
-                        self.getKingMoves(r,c,moves)
+                    self.moveFunctions[piece](r,c,moves)
         return moves 
     
     '''
