@@ -15,13 +15,13 @@ class GameState():
         self.board = [
             ["bR","bN","bB","bQ","bK","bB","bN","bR"],
             ["bP","bP","bP","bP","bP","bP","bP","bP"],
+            ["--","--","--","wP","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
-            ["--","--","--","--","--","--","--","--"],
-            ["--","--","--","--","--","--","--","--"],
+            ["--","--","--","bP","--","--","--","--"],
             ["wP","wP","wP","wP","wP","wP","wP","wP"],
             ["wR","wN","wB","wQ","wK","wB","wN","wR"]
-        ]
+        ] #Note: a two pawns have been added for testing
         self.whiteToMove = True
         self.moveLog = []
     
@@ -79,12 +79,20 @@ class GameState():
     Get all pawn moves for the pawn located at [r][c] and add them to the list
     '''
     def getPawnMoves(self,r,c,moves):
+        # white Pawn moves
         if self.whiteToMove: #white's turn 
             if self.board[r-1][c] == '--': # move one place
                 moves.append(Move((r,c),(r-1,c),self.board))
                 if r == 6 and self.board[r-2][c] == '--': # move two places
                     moves.append(Move((r,c),(r-2,c),self.board))
 
+            # captures
+            if c-1 >= 0: #edge case - cannot capture beyond the extreme
+                if self.board[r-1][c-1][0] == 'b': #capture to the left
+                    moves.append(Move((r,c),(r-1,c-1),self.board))
+            if c+1 <= 7: #capture to the right
+                if self.board[r-1][c+1][0] == 'b':
+                    moves.append(Move((r,c),(r-1,c+1),self.board))
 
     '''
     Get all rook moves for the rook located at [r][c] and add them to the list
@@ -118,6 +126,7 @@ class GameState():
 
 
 class Move():
+
     # map keys (ranks/files) to values (rows/cols)
 
     ranksToRows = {"1":7,"2":6,"3":5,"4":4,
