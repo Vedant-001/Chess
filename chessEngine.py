@@ -55,11 +55,11 @@ class GameState():
     All valid moves without considering checks
     '''
     def getPossibleMoves(self):
-        moves = [Move((6,4),(4,4),self.board)]
+        moves = []
         for r in range(len(self.board)): # use len(self.board) instead of simply 8
             for c in range(len(self.board[r])):
                 turn = self.board[r][c][0]
-                if (turn == 'w' and self.whiteToMove) and (turn == 'b' and not self.whiteToMove):
+                if (turn == 'w' and self.whiteToMove) or (turn == 'b' and not self.whiteToMove):
                     piece = self.board[r][c][1]
 
                     if piece == 'p':
@@ -79,37 +79,42 @@ class GameState():
     '''
     Get all pawn moves for the pawn located at [r][c] and add them to the list
     '''
-    def getPawnMoves(r,c,moves):
-        pass
+    def getPawnMoves(self,r,c,moves):
+        if self.whiteToMove: #white's turn 
+            if self.board[r-1][c] == '--': # move one place
+                moves.append(Move((r,c),(r-1,c),self.board))
+                if r == 6 and self.board[r-2][c] == '--': # move two places
+                    moves.append(Move((r,c),(r-2,c),self.board))
+
 
     '''
     Get all rook moves for the rook located at [r][c] and add them to the list
     '''
-    def getRookMoves(r,c,moves):
+    def getRookMoves(self,r,c,moves):
         pass 
 
     '''
     Get all bishop moves for the bishop located at [r][c] and add them to the list
     '''
-    def getBishopMoves(r,c,moves):
+    def getBishopMoves(self,r,c,moves):
         pass
     
     '''
     Get all night moves for the night located at [r][c] and add them to the list
     '''
-    def getNightMoves(r,c,moves):
+    def getNightMoves(self,r,c,moves):
         pass
 
     '''
     Get all queen moves for the queen located at [r][c] and add them to the list
     '''
-    def getQueenMoves(r,c,moves):
+    def getQueenMoves(self,r,c,moves):
         pass
 
     '''
     Get all king moves for the king located at [r][c] and add them to the list
     '''
-    def getKingMoves(r,c,moves):
+    def getKingMoves(self,r,c,moves):
         pass
 
 
@@ -132,6 +137,7 @@ class Move():
         self.piece_moved = board[self.start_row][self.start_col]
         self.piece_captured = board[self.end_row][self.end_col]
         self.moveId = self.start_row*1000 + self.start_col*100 + self.end_row*10 + self.end_col
+        print(self.moveId)
 
     """
     Override the equals method
@@ -139,7 +145,7 @@ class Move():
     def __eq__(self,other):
         if isinstance(other,Move): # isinstance is a function
             return self.moveId == other.moveId
-            return False
+        return False
 
     def getChessNotation(self):
         return self.getRankFile(self.start_row,self.start_col)+self.getRankFile(self.end_row,self.end_col)
