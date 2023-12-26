@@ -26,6 +26,11 @@ class GameState():
                               'N':self.getNightMoves,'Q':self.getQueenMoves,'R':self.getRookMoves}
         self.whiteToMove = True
         self.moveLog = []
+        self.whiteKingLocation = (7,4)
+        self.blackKingLocation = (0,4)
+        self.checkMate = False
+        self.staleMate = False
+
     
     '''
     Makes a move (cannot castle/en-passant/promote a pawn)
@@ -35,10 +40,11 @@ class GameState():
         self.board[move.end_row][move.end_col] = move.piece_moved
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove # swap current player
-        if self.whiteToMove:
-            print("white to move")
-        else:
-            print("black to move")
+        # update the kings' positions when needed
+        if(move.piece_moved == "wK"):
+            self.whiteKingLocation = (move.end_row,move.end_col)
+        elif(move.piece_moved == "bK"):
+            self.blackKingLocation = (move.end_row,move.end_col)
 
     '''
     Undo the last move
@@ -49,14 +55,67 @@ class GameState():
             self.board[move.start_row][move.start_col] = move.piece_moved
             self.board[move.end_row][move.end_col] = move.piece_captured # places empty if there was no piece captured
             self.whiteToMove = not self.whiteToMove # switch back to the player's move
+            # update the kings' positions when needed
+            if(move.piece_moved == "wK"):
+                self.whiteKingLocation = (move.start_row,move.start_col)
+            elif(move.piece_moved == "bK"):
+                self.blackKingLocation = (move.start_row,move.start_col)
     
     '''
     All valid moves considering check
     '''
     def getValidMove(self):
-        return self.getPossibleMoves()
-        pass
+        #1. generate all possible moves
+        moves = self.getPossibleMoves()
+        #2. for each move -> make the move
+        for i in range(len(moves)-1,-1,-1):
+            self.makeMove(moves[i])
+            #3. generate opponent's possible moves
+            opponentMoves = self.getPossibleMoves()
+            #4. for all of opponent's possible moves -> see if the king is being attacked
+            self.whiteToMove = not self.whiteToMove
+            if self.isInCheck():
+                moves.remove(moves[i]) #5. Not a valid move if king is under attack
+            self.whiteToMove = not self.whiteToMove
+            self.undoMove()
+        if len(moves) == 0:
+            if self.isInCheck():
+                self.checkMate = True
+            else:
+                self.staleMate = True
+        # if we make a move leading to either of the mates -> the values will become true
+        # but if we undo after a checkmate/stalemate, we need to reset the values to False
+        else:
+            self.checkMate = False
+            self.staleMate = False
+        return moves
 
+    '''
+    Determine if the current player is in check
+    '''
+    def isInCheck(self):
+        if self.whiteToMove:
+            return self.isUnderAttack(self.whiteKingLocation[0],self.whiteKingLocation[1])
+        else:
+            return self.isUnderAttack(self.blackKingLocation[0],self.blackKingLocation[1])
+
+    '''
+    Determine if the opponenet can attack the square r,c 
+    (probably containing current player's king)
+    '''
+    
+    def isUnderAttack(self,r,c):
+        self.whiteToMove = not self.whiteToMove #switch to opponent's perspective
+        opponentMoves = self.getPossibleMoves()
+        self.whiteToMove = not self.whiteToMove #switch back to current player
+
+        for move in opponentMoves:
+            if move.end_row == r and move.end_col == c:
+                return True
+        return False
+
+
+        
     '''
     All valid moves without considering checks
     '''
@@ -106,51 +165,25 @@ class GameState():
     Get all rook moves for the rook located at [r][c] and add them to the list
     '''
     def getRookMoves(self,r,c,moves):
-        # four variables for four directions
-        left,right,up,down = c-1,c+1,r-1,r+1
-
+        directions = ((-1,0),(0,-1),(0,1),(1,0))
         enemyColor = "b" if self.whiteToMove else "w"
-        playerColor = "w" if self.whiteToMove else "b"
 
-        while(up >= 0):
-            # if the piece is of the same color -> don't include the square and stop
-            if(self.board[up][c][0] == playerColor):
-                break
-            moves.append(Move((r,c),(up,c),self.board))
-            # if the piece is of different color -> include the square and stop
-            if(self.board[up][c][0] == enemyColor):
-                break
-            up -= 1
-        
-        while(down <= 7):
-            # if the piece is of the same color -> don't include the square and stop
-            if(self.board[down][c][0] == playerColor):
-                break
-            moves.append(Move((r,c),(down,c),self.board))
-            # if the piece is of different color -> include the square and stop
-            if(self.board[down][c][0] == enemyColor):
-                break
-            down += 1
+        for d in directions:
+            for i in range(1,8):
+                endRow = r + d[0]*i
+                endCol = c + d[1]*i
+                if 0 <= endRow < 8 and 0 <= endCol < 8:
+                    endPiece = self.board[endRow][endCol]
+                    if endPiece == '--':
+                        moves.append(Move((r,c,moves),(endRow,endCol,moves),self.board))
+                    elif endPiece[0] == enemyColor:
+                        moves.append(Move((r,c,moves),(endRow,endCol,moves),self.board))
+                        break
+                    else:
+                        break
+                else:
+                    break
 
-        while(left >= 0):
-            # if the piece is of the same color -> don't include the square and stop
-            if(self.board[r][left][0] == playerColor):
-                break
-            moves.append(Move((r,c),(r,left),self.board))
-            # if the piece is of different color -> include the square and stop
-            if(self.board[r][left][0] == enemyColor):
-                break
-            left -= 1
-        
-        while(right <= 7):
-            # if the piece is of the same color -> don't include the square and stop
-            if(self.board[r][right][0] == playerColor):
-                break
-            moves.append(Move((r,c),(r,right),self.board))
-            # if the piece is of different color -> include the square and stop
-            if(self.board[r][right][0] == enemyColor):
-                break
-            right += 1
 
     '''
     Get all bishop moves for the bishop located at [r][c] and add them to the list
@@ -158,7 +191,6 @@ class GameState():
     def getBishopMoves(self,r,c,moves):
         directions = ((-1,-1),(-1,1),(1,-1),(1,1))
         enemyColor = "b" if self.whiteToMove else "w"
-        playerColor = "w" if enemyColor == "b" else "b"
 
         for d in directions:
             for i in range(1,8):
@@ -166,10 +198,12 @@ class GameState():
                 endCol = c+d[1]*i
                 if 0 <= endRow < 8 and 0 <= endCol < 8:
                     endPiece = self.board[endRow][endCol]
-                    if endPiece[0] == playerColor:
+                    if endPiece == '--':
+                        moves.append(Move((r,c,),(endRow,endCol),self.board))
+                    elif endPiece[0] == enemyColor:
+                        moves.append(Move((r,c,),(endRow,endCol),self.board))
                         break
-                    moves.append(Move((r,c,),(endRow,endCol),self.board))
-                    if endPiece[0] == enemyColor:
+                    else:
                         break
                 else:
                     break
@@ -180,24 +214,16 @@ class GameState():
     Get all night moves for the night located at [r][c] and add them to the list
     '''
     def getNightMoves(self,r,c,moves):
+        knightMoves = ((-2,-1),(-2,1),(-1,-2),(-1,2),(1,-2),(1,2),(2,-1),(2,1))
         playerColor = "w" if self.whiteToMove else "b"
 
-        if r+2 < 8 and c+1 <8 and self.board[r+2][c+1][0] != playerColor:
-            moves.append(Move((r,c),(r+2,c+1),self.board))
-        if r+2 < 8 and c-1 >= 0 and self.board[r+2][c-1][0] != playerColor:
-            moves.append(Move((r,c),(r+2,c-1),self.board))
-        if r-2 >= 0 and c+1 < 8 and self.board[r-2][c+1][0] != playerColor:
-            moves.append(Move((r,c),(r-2,c+1),self.board))
-        if r-2 >= 0 and c-1 >= 0 and self.board[r-2][c-1][0] != playerColor:
-            moves.append(Move((r,c),(r-2,c-1),self.board))
-        if r+1 < 8 and c+2 < 8 and self.board[r+1][c+2][0] != playerColor:
-            moves.append(Move((r,c),(r+1,c+2),self.board))
-        if r-1 >= 0 and c+2 < 8 and self.board[r-1][c+2][0] != playerColor:
-            moves.append(Move((r,c),(r-1,c+2),self.board))
-        if r+1 < 8 and c-2 >= 0 and self.board[r+1][c-2][0] != playerColor:
-            moves.append(Move((r,c),(r+1,c-2),self.board))
-        if r-1 >= 0 and c-2 >= 0 and self.board[r-1][c-2][0] != playerColor:
-            moves.append(Move((r,c),(r-1,c-2),self.board))
+        for m in knightMoves:
+            endRow = r + m[0]
+            endCol = c + m[1]
+            if 0 <= endRow < 8 and 0 <= endCol < 8:
+                endPiece = self.board[endRow][endCol]
+                if endPiece[0] != playerColor:
+                    moves.append(Move((r,c,moves),(endRow,endCol,moves),self.board))
 
     '''
     Get all queen moves for the queen located at [r][c] and add them to the list
@@ -210,27 +236,18 @@ class GameState():
     Get all king moves for the king located at [r][c] and add them to the list
     '''
     def getKingMoves(self,r,c,moves):
+        directions = ((-1,-1),(-1,0),(-1,1),
+                      (0,-1),(0,1),
+                      (1,-1),(1,0),(1,1))
         playerColor = "w" if self.whiteToMove else "b"
-        if r+1 < 8:
-            if self.board[r+1][c][0] != playerColor:
-                moves.append(Move((r,c),(r+1,c),self.board))
-            if c-1 >= 0 and self.board[r+1][c-1][0] != playerColor:
-                moves.append(Move((r,c),(r+1,c-1),self.board))
-            if c+1 <8 and self.board[r+1][c+1][0] != playerColor:
-                moves.append(Move((r,c),(r+1,c+1),self.board))
-        if r-1 >= 0:
-            if self.board[r-1][c][0] != playerColor:
-                moves.append(Move((r,c),(r-1,c),self.board))
-            if c-1 >= 0 and self.board[r-1][c-1][0] != playerColor:
-                moves.append(Move((r,c),(r-1,c-1),self.board))
-            if c+1 <8 and self.board[r-1][c+1][0] != playerColor:
-                moves.append(Move((r,c),(r-1,c+1),self.board))
-        if c+1 < 8 and self.board[r][c+1][0] != playerColor:
-            moves.append(Move((r,c),(r,c+1),self.board))
-        if c-1 < 8 and self.board[r][c-1][0] != playerColor:
-            moves.append(Move((r,c),(r,c-1),self.board))
+        for i in range(1,8):
+            endRow = r + directions[i][0]
+            endCol = c + directions[i][1]
 
-        pass
+            if 0 <= endRow < 8 and 0 <= endCol < 8:
+                endPiece = self.board[endRow][endCol]
+                if endPiece != playerColor:
+                    moves.append(Move((r,c,moves),(endRow,endCol,moves),self.board))
 
 
 class Move():
