@@ -85,7 +85,11 @@ class GameState():
         if len(moves) == 0:
             if self.isInCheck():
                 self.checkMate = True
+                print("CHECKMATE")
+                print("BLACK" if self.whiteToMove else "WHITE","WON!")
+                quit()
             else:
+                print("STALEMATE")
                 self.staleMate = True
         # if we make a move leading to either of the mates -> the values will become true
         # but if we undo after a checkmate/stalemate, we need to reset the values to False
@@ -250,7 +254,7 @@ class GameState():
 
             if 0 <= endRow < 8 and 0 <= endCol < 8:
                 endPiece = self.board[endRow][endCol]
-                if endPiece != playerColor:
+                if endPiece[0] != playerColor:
                     moves.append(Move((r,c,moves),(endRow,endCol,moves),self.board))
 
 
