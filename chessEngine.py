@@ -89,7 +89,7 @@ class GameState():
                 print("BLACK" if self.whiteToMove else "WHITE","WON!")
                 quit()
             else:
-                print("STALEMATE")
+                print("STALEMATE!")
                 self.staleMate = True
         # if we make a move leading to either of the mates -> the values will become true
         # but if we undo after a checkmate/stalemate, we need to reset the values to False
