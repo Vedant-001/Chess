@@ -15,7 +15,7 @@ class GameState():
         self.board = [
             ["bR","bN","bB","bQ","bK","bB","bN","bR"],
             ["bP","bP","bP","bP","bP","bP","bP","bP"],
-            ["--","--","--","--","--","--","--","bB"],
+            ["--","--","--","--","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
             ["--","--","--","--","--","--","--","--"],
@@ -45,6 +45,10 @@ class GameState():
             self.whiteKingLocation = (move.end_row,move.end_col)
         elif(move.piece_moved == "bK"):
             self.blackKingLocation = (move.end_row,move.end_col)
+        
+        # promote to a Queen
+        if move.isPawnPromotion:
+            self.board[move.end_row][move.end_col] = move.piece_moved[0]+'Q'
 
     '''
     Undo the last move
@@ -269,6 +273,11 @@ class Move():
         self.end_col = end_square[1]
         self.piece_moved = board[self.start_row][self.start_col]
         self.piece_captured = board[self.end_row][self.end_col]
+        
+        # check if the move leads to pawn promotion
+        self.isPawnPromotion = False
+        if (self.piece_moved == "wP" and self.end_row == 0) or (self.piece_moved == "bP" and self.end_row == 7):
+            self.isPawnPromotion = True
         self.moveId = self.start_row*1000 + self.start_col*100 + self.end_row*10 + self.end_col
 
     """
