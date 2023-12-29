@@ -108,7 +108,6 @@ class GameState():
             # undo castling rights
             self.castleRightLog.pop() # pop the latest castle rights from the undone move
             self.currentCastlingRights = self.castleRightLog[-1] # update castle rights to what they were 
-            print(self.currentCastlingRights.wks,self.currentCastlingRights.wqs,self.currentCastlingRights.bks,self.currentCastlingRights.bqs)
             # undo castle move
             if move.isCastleMove:
                 if move.end_col-move.start_col == 2: #kingside
@@ -142,6 +141,7 @@ class GameState():
     All valid moves considering check
     '''
     def getValidMove(self):
+        print(self.currentCastlingRights.wks,self.currentCastlingRights.wqs,self.currentCastlingRights.bks,self.currentCastlingRights.bqs)
         tempEnPassantPossible = self.enPassantPossible # copy of square where enpassant is possible
         tempCastleRights = CastlingRights(self.currentCastlingRights.wks,self.currentCastlingRights.wqs,
                                           self.currentCastlingRights.bks,self.currentCastlingRights.bqs)
@@ -368,7 +368,7 @@ class GameState():
     def getQueensideCastleMoves(self,r,c,moves):
         if self.board[r][c-1] == '--' and self.board[r][c-2] == '--' and self.board[r][c-3] == '--':
             if not self.isUnderAttack(r,c-1) and not self.isUnderAttack(r,c-2):
-                moves.append(Move(r,c),(r,c-2),self.board,isCastleMove = True)
+                moves.append(Move((r,c),(r,c-2),self.board,isCastleMove = True))
 
 class CastlingRights():
     def __init__(self,wks,wqs,bks,bqs) -> None:
