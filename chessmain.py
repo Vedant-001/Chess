@@ -64,7 +64,6 @@ def main():
                 # which is not necessarily a legal move -> still move the piece
                 if len(player_clicks) == 2:
                     move = chessEngine.Move(player_clicks[0],player_clicks[1],gamestate.board)
-                    print(move.getChessNotation())
                     for i in range(len(valid_moves)):
                         if move == valid_moves[i]:
                             gamestate.makeMove(valid_moves[i])
